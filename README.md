@@ -33,4 +33,4 @@ npm run build
 try_files $uri $uri/ /index.html last;
 ```
 #### 后端API配置
-[修改此处](https://github.com/xiaodit/think-ant-vue/blob/master/src/utils/request.js#L14)
+[修改此处](https://github.com/xiaodit/think-ant-vue/blob/5.1/src/utils/request.js#L14)
