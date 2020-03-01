@@ -59,15 +59,15 @@ import { fetchPost, createPost, updatePost, deletePost } from '@/api/post'
 const columns = [
   {
     title: '岗位标识',
-    dataIndex: 'postCode'
+    dataIndex: 'post_code'
   },
   {
     title: '岗位名称',
-    dataIndex: 'postName'
+    dataIndex: 'post_name'
   },
   {
     title: '岗位排序',
-    dataIndex: 'postSort'
+    dataIndex: 'post_sort'
   },
   {
     title: '状态',
@@ -75,7 +75,7 @@ const columns = [
   },
   {
     title: '创建时间',
-    dataIndex: 'createTime'
+    dataIndex: 'create_time'
   },
   {
     title: '操作',
@@ -110,9 +110,9 @@ export default {
       const form = this.$refs.postForm.form
       this.$nextTick(() => {
         form.setFieldsValue({
-          postName: row.postName,
-          postCode: row.postCode,
-          postSort: row.postSort,
+          post_name: row.post_name,
+          post_code: row.post_code,
+          post_sort: row.post_sort,
           status: row.status
         })
       })
@@ -128,14 +128,13 @@ export default {
         if (!err) {
           this.confirmLoading = true
           const promise = this.selected === 0 ? createPost(values) : updatePost(this.selected, values)
+          const hide = this.$message.loading('执行中..', 0)
           promise.then(res => {
-            this.$notification['success']({
-              message: '成功通知',
-              description: this.selected === 0 ? '添加成功！' : '更新成功！'
-            })
+            this.$message.success(this.selected === 0 ? '添加成功！' : '更新成功！')
             this.refreshTable()
             this.handleCancel()
           }).finally(() => {
+            hide()
             this.confirmLoading = false
           })
         }
@@ -157,12 +156,12 @@ export default {
         okType: 'danger',
         cancelText: '取消',
         onOk: () => {
+          const hide = this.$message.loading('删除中..', 0)
           deletePost(id).then(res => {
-            this.$notification['success']({
-              message: '成功通知',
-              description: '删除成功！'
-            })
+            this.$message.success('删除成功！')
             this.refreshTable()
+          }).finally(() => {
+            hide()
           })
         }
       })

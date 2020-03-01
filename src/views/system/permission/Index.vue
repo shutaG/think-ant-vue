@@ -225,14 +225,14 @@ export default {
         if (!err) {
           this.confirmLoading = true
           const promise = this.selected === 0 ? addPermission(values) : updatePermission(this.selected, values)
+          const hide = this.$message.loading('执行中..', 0)
           promise.then(res => {
-            this.$notification['success']({
-              message: '成功通知',
-              description: this.selected === 0 ? '添加成功！' : '更新成功！'
-            })
+            this.$message.success(this.selected === 0 ? '添加成功！' : '更新成功！')
             this.refreshTable()
             this.handleCancel()
+            this.$store.dispatch('ReloadRouters')
           }).finally(() => {
+            hide()
             this.confirmLoading = false
           })
         }
@@ -251,12 +251,14 @@ export default {
         okType: 'danger',
         cancelText: '取消',
         onOk: () => {
+          const hide = this.$message.loading('删除中..', 0)
           deletePermission(id).then(res => {
-            this.$notification['success']({
-              message: '成功通知',
-              description: '删除成功！'
-            })
+            this.$message.success('删除成功！')
             this.refreshTable()
+            this.$store.dispatch('ReloadRouters')
+          }).finally(() => {
+            hide()
+            this.updating = false
           })
         }
       })
