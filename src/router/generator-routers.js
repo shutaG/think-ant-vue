@@ -52,7 +52,10 @@ const constantRouterComponents = {
   'BindingSettings': () => import('@/views/account/settings/Binding'),
   'NotificationSettings': () => import('@/views/account/settings/Notification'),
 
-  'TestWork': () => import(/* webpackChunkName: "TestWork" */ '@/views/dashboard/TestWork')
+  'TestWork': () => import(/* webpackChunkName: "TestWork" */ '@/views/dashboard/TestWork'),
+
+  // blog
+  'BlogList': () => import('@/views/blog/List')
 }
 
 // 前端未找到页面路由（固定不用改）

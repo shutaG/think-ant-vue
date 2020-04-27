@@ -19,6 +19,9 @@ const api = {
   Log: {
     Acount: '/log/acount',
     Db: '/log/db'
+  },
+  Blog: {
+    List: '/blog/api/list'
   }
 }
 export default api

@@ -30,6 +30,10 @@ export const Components = {
     'NotificationSettings': () => import('@/views/account/settings/Notification'),
 
     // 权限测试
-    'TestNotAjax': () => import('@/views/test/NotAjax')
+    'TestNotAjax': () => import('@/views/test/NotAjax'),
+
+    // blog
+    'BlogArticle': () => import('@/views/blog/Article'),
+    'BlogList': () => import('@/views/blog/List')
   }
 }
