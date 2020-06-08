@@ -2,54 +2,27 @@
   <a-card>
     <a-form :form="form" @submit="handleSubmit">
       <a-form-item label="标题" :label-col="{ span: 2 }" :wrapper-col="{ span: 15}">
-        <a-input
-          v-decorator="['title', { rules: [{ required: true, message: '请填写文章标题!' }] }]"
-          placeholder="填写文章标题"
-        />
+        <a-input v-decorator="['title', { rules: [{ required: true, message: '请填写文章标题!' }] }]" placeholder="填写文章标题" />
       </a-form-item>
       <a-form-item label="简介" :label-col="{ span: 2 }" :wrapper-col="{ span: 15 }">
-        <a-textarea
-          placeholder="Basic usage"
-          :rows="4"
-          v-decorator="['introduce', { rules: [{ required: true, message: '请输入文章介绍!' }] }]"
-        />
+        <a-textarea placeholder="Basic usage" :rows="4" v-decorator="['introduce', { rules: [{ required: true, message: '请输入文章介绍!' }] }]" />
       </a-form-item>
       <a-form-item label="图片" :label-col="{ span: 2 }" :wrapper-col="{ span: 15 }">
         <a-upload
+          v-decorator="['image', { rules: [{ required: false, message: '请选择图片!' }] }]"
           name="image"
           listType="picture-card"
           class="avatar-uploader"
           :showUploadList="false"
-          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-          :beforeUpload="beforeUpload"
-          @change="handleChange"
-        >
-          <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+          action="http://antadmin.com/admin/blog/upload"
+          @change="handleChange">
+          <img style="width: 200px;" v-if="imageUrl" :src="imageUrl" alt="avatar" />
           <div v-else>
             <a-icon :type="loading ? 'loading' : 'plus'" />
             <div class="ant-upload-text">Upload</div>
           </div>
         </a-upload>
       </a-form-item>
-      <!-- <a-form-item label="栏目" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
-        <a-select
-          v-decorator="[
-            'category',
-            { rules: [{ required: true, message: '请选择文章栏目!' }] },
-          ]"
-          placeholder="选择文章栏目"
-        >
-          <a-select-option value="male">
-            male
-          </a-select-option>
-          <a-select-option value="female">
-            female
-          </a-select-option>
-        </a-select>
-      </a-form-item> -->
-      <!-- <a-form-item label="Gender" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
-        <we v-model="defaultHtml" @change="handleChange" :customConfig="customConfig" />
-      </a-form-item> -->
       <a-form-item label="内容" :label-col="{ span: 2 }" :wrapper-col="{ span: 21 }">
         <mavon-editor v-model="value" />
       </a-form-item>
@@ -67,7 +40,11 @@
 import we from '@/components/Editor/WangEditor'
 import Vue from 'vue'
 import mavonEditor from 'mavon-editor'
-import { getBlogDetail } from '@/api/blog'
+import {
+  getBlogDetail,
+  submitArticle,
+  updateArticle
+} from '@/api/blog'
 
 // markdown-it对象：md.s_markdown, md => mavonEditor实例
 //                 or
@@ -88,7 +65,9 @@ export default {
       loading: false,
       imageUrl: '',
       description: '来发表一章文章吧',
-      form: this.$form.createForm(this, { name: 'coordinated' }),
+      form: this.$form.createForm(this, {
+        name: 'coordinated'
+      }),
       html: '',
       defaultHtml: `
         <p>欢迎使用<b>wangEditor 富文本编辑器</b>，请输入内容...</p><p><br></p>
@@ -101,7 +80,10 @@ export default {
       value: null
     }
   },
-  components: { we, getBlogDetail },
+  components: {
+    we,
+    getBlogDetail
+  },
   created () {
     if (this.id) {
       console.log(1)
@@ -110,27 +92,26 @@ export default {
   },
   methods: {
     getDetail () {
-      getBlogDetail({ id: 1 }).then(res => {
+      getBlogDetail({
+        id: 1
+      }).then(res => {
         console.log(res)
         res = res.result
         this.detail = res
+        this.imageUrl = res.image
         setTimeout(() => {
           this.value = res.content
           this.form.setFieldsValue({
             title: res.title,
             introduce: res.introduce,
             content: res.content
-            // name: res.data.name,
-            // source_url: res.data.source_url,
-            // classify_id: res.data.classify_id,
-            // icon_url: res.data.icon_url,
-            // price: res.data.price,
-            // service_id: res.data.service_id
           })
         }, 1)
       })
     },
     handleChange (info) {
+      console.log('2222')
+      console.log(info)
       if (info.file.status === 'uploading') {
         this.loading = true
         return
@@ -141,6 +122,9 @@ export default {
           this.imageUrl = imageUrl
           this.loading = false
         })
+        this.imageName = info.file.response.result.name
+        this.imageUrl = info.file.response.result.src
+        this.loading = false
       }
     },
     handleChange2 (html) {
@@ -148,10 +132,24 @@ export default {
       this.html = html
     },
     handleSubmit (e) {
+      var that = this
       e.preventDefault()
-      this.form.validateFields((err, values) => {
+      console.log('test')
+      this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
+          values.content = that.value
+          values.image = that.imageName
+          if (!that.id) {
+            submitArticle(values).then(res => {
+              console.log(res)
+            })
+          } else {
+            values.id = that.id
+            updateArticle(values).then(res => {
+              console.log(res)
+            })
+          }
         }
       })
     }

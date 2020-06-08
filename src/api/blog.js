@@ -14,3 +14,19 @@ export function getBlogDetail (params) {
     params
   })
 }
+
+export function submitArticle (params) {
+  return axios({
+    url: '/blog/add',
+    method: 'post',
+    params
+  })
+}
+
+export function updateArticle (params) {
+  return axios({
+    url: '/blog/update',
+    method: 'post',
+    params
+  })
+}
