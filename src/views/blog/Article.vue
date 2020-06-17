@@ -14,7 +14,7 @@
           listType="picture-card"
           class="avatar-uploader"
           :showUploadList="false"
-          action="http://antadmin.com/admin/blog/upload"
+          :action="baseUrl + '/admin/blog/upload'"
           @change="handleChange">
           <img style="width: 200px;" v-if="imageUrl" :src="imageUrl" alt="avatar" />
           <div v-else>
@@ -24,7 +24,7 @@
         </a-upload>
       </a-form-item>
       <a-form-item label="内容" :label-col="{ span: 2 }" :wrapper-col="{ span: 21 }">
-        <mavon-editor v-model="value" />
+        <mavon-editor ref="md" v-model="value" @imgAdd="$imgAdd"/>
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 12, offset: 2 }">
         <a-button type="primary" html-type="submit">
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { axios } from '@/utils/request'
 import we from '@/components/Editor/WangEditor'
 import Vue from 'vue'
 import mavonEditor from 'mavon-editor'
@@ -77,7 +78,8 @@ export default {
         zIndex: 1
       },
       detail: null,
-      value: null
+      value: null,
+      baseUrl: process.env.VUE_APP_API_BASE_HOST
     }
   },
   components: {
@@ -85,20 +87,41 @@ export default {
     getBlogDetail
   },
   created () {
+    console.log('环境-----------------')
+    console.log(process.env.NODE_ENV)
     if (this.id) {
       console.log(1)
       this.getDetail()
     }
   },
   methods: {
+    // 图片上传
+    $imgAdd (pos, $file) {
+      // 第一步.将图片上传到服务器.
+      var formdata = new FormData()
+      var that = this
+      formdata.append('image', $file)
+      axios({
+        url: that.baseUrl + '/admin/blog/upload',
+        method: 'post',
+        data: formdata,
+        headers: { 'Content-Type': 'multipart/form-data' }
+      }).then((url) => {
+        // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
+        // $vm.$img2Url 详情见本页末尾
+        console.log(url)
+        var imgUrl = that.baseUrl + url.result.src
+        this.$refs.md.$img2Url(pos, imgUrl)
+      })
+    },
     getDetail () {
       getBlogDetail({
-        id: 1
+        id: this.id
       }).then(res => {
         console.log(res)
         res = res.result
         this.detail = res
-        this.imageUrl = res.image
+        this.imageUrl = this.baseUrl + '/upload/' + res.image
         setTimeout(() => {
           this.value = res.content
           this.form.setFieldsValue({
