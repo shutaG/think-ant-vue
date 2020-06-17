@@ -19,7 +19,7 @@ export function submitArticle (params) {
   return axios({
     url: '/blog/add',
     method: 'post',
-    params
+    data: params
   })
 }
 
@@ -27,6 +27,6 @@ export function updateArticle (params) {
   return axios({
     url: '/blog/update',
     method: 'post',
-    params
+    data: params
   })
 }
