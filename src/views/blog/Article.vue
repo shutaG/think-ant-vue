@@ -7,6 +7,9 @@
       <a-form-item label="简介" :label-col="{ span: 2 }" :wrapper-col="{ span: 15 }">
         <a-textarea placeholder="Basic usage" :rows="4" v-decorator="['introduce', { rules: [{ required: true, message: '请输入文章介绍!' }] }]" />
       </a-form-item>
+      <a-form-item label="SEO关键字" :label-col="{ span: 2 }" :wrapper-col="{ span: 15 }">
+        <a-textarea placeholder="请输入关键字，关键字之间使用空格隔开!" :rows="4" v-decorator="['keywords', { rules: [{ required: true, message: '请输入关键字，关键字之间使用空格隔开!' }] }]" />
+      </a-form-item>
       <a-form-item label="图片" :label-col="{ span: 2 }" :wrapper-col="{ span: 15 }">
         <a-upload
           v-decorator="['image', { rules: [{ required: false, message: '请选择图片!' }] }]"
@@ -127,7 +130,8 @@ export default {
           this.form.setFieldsValue({
             title: res.title,
             introduce: res.introduce,
-            content: res.content
+            content: res.content,
+            keywords: res.keywords
           })
         }, 1)
       })
