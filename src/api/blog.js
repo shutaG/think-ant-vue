@@ -1,9 +1,15 @@
 import { axios } from '@/utils/request'
 
-export function getBlogList () {
+export function getBlogList (params) {
+  console.log('----------------')
+  console.log(params)
   return axios({
     url: '/blog/list',
-    method: 'get'
+    method: 'get',
+    params: {
+      page: params.pageNo
+    }
+
   })
 }
 
